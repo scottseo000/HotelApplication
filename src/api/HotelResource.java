@@ -7,10 +7,14 @@ import java.util.Collection;
 import java.util.Date;
 
 public class HotelResource {
-    static final HotelResource SINGLETON = new HotelResource();
+    private static final HotelResource SINGLETON = new HotelResource();
 
-    final CustomerService customerService = CustomerService.getSingleton();
-    final ReservationService reservationService = ReservationService.getSingleton();
+    private final CustomerService customerService = CustomerService.getSingleton();
+    private final ReservationService reservationService = ReservationService.getSingleton();
+
+    private HotelResource() {
+
+    }
 
     public static HotelResource getSingleton() {
         return SINGLETON;

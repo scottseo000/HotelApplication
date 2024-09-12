@@ -9,8 +9,8 @@ import java.util.*;
 
 public class AdminMenu {
 
-    static final AdminResource adminResource = AdminResource.getSingleton();
-    static final HotelResource hotelResource = HotelResource.getSingleton();
+    private static final AdminResource adminResource = AdminResource.getSingleton();
+    private static final HotelResource hotelResource = HotelResource.getSingleton();
 
     public static void adminMenu() {
         printAdminMenu();

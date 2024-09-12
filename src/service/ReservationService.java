@@ -101,7 +101,7 @@ public class ReservationService {
     }
     public void printAllReservations() {
         for (Reservation reservation : reservations.values()) {
-            System.out.println(reservation.toString());
+            System.out.println(reservation.toString() + "\n");
         }
     }
 

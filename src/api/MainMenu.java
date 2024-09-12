@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class MainMenu {
     static final DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-    static final HotelResource hotelResource = HotelResource.getSingleton();
+    private static final HotelResource hotelResource = HotelResource.getSingleton();
 
 
     public static void  mainMenu() {

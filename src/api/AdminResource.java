@@ -7,10 +7,14 @@ import java.util.List;
 
 public class AdminResource {
 
-    static final AdminResource SINGLETON = new AdminResource();
+    private static final AdminResource SINGLETON = new AdminResource();
 
-    final CustomerService customerService = CustomerService.getSingleton();
-    final ReservationService reservationService = ReservationService.getSingleton();
+    private final CustomerService customerService = CustomerService.getSingleton();
+    private final ReservationService reservationService = ReservationService.getSingleton();
+
+    private AdminResource() {
+
+    }
 
     public static AdminResource getSingleton() {
         return SINGLETON;
