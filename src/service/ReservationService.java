@@ -9,7 +9,7 @@ public class ReservationService {
     private static final ReservationService SINGLETON = new ReservationService();
 
     private final Map<String, IRoom> rooms = new HashMap<>();
-    private final Map<String, Reservation> reservations = new HashMap<>();
+    private final Map<String, Collection<Reservation>> reservations = new HashMap<>();
 
     public static ReservationService getSingleton() {
         return SINGLETON;
@@ -26,44 +26,57 @@ public class ReservationService {
     }
 
     //To ensure main program knows if reservation worked or not, bool was used
-    public Reservation reserveARoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate) {
+    public void reserveARoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate) {
 
         //Make sure room exists
         if (rooms.containsValue(room)) {
-
-            Reservation res = new Reservation(customer, room, checkInDate, checkOutDate);
+            Reservation newReservation = new Reservation(customer, room, checkInDate, checkOutDate);
+            Collection<Reservation> customersReservations = new ArrayList<>();
 
             //If list is empty, new reservation is allowed
             if (this.reservations.isEmpty()) {
-                reservations.put(customer.getEmail(), res);
-                return res;
-            }
+                customersReservations.add(newReservation);
+                reservations.put(customer.getEmail(), customersReservations);
+            } else {
+                List<Reservation> roomReservations = new ArrayList<>();
+                //Get a list of all reservations with same room as requested room
+                //For each entry in the map
+                for (Map.Entry<String, Collection<Reservation>> entry : reservations.entrySet()) {
+                    //For each reservation in the entry's collection
+                    for (Reservation reservation : entry.getValue()) {
+                        if (reservation.getRoom().equals(room)) {
+                            System.out.println("roomReservations populated");
+                            System.out.println(reservation.getRoom().toString());
+                            System.out.println(room);
+                            roomReservations.add(reservation);
+                        }
+                    }
+                }
 
-            List<Reservation> roomReservations = new ArrayList<>();
-            //Get a list of all reservations with same room as requested room
-            for (Map.Entry<String, Reservation> entry : reservations.entrySet()) {
-                if (entry.getValue().getRoom().equals(room)) {
-                    roomReservations.add(entry.getValue());
+                //Check for date overlaps with newly created list
+                boolean overlaps = false;
+                for (Reservation existingRes : roomReservations) {
+                    if (dateOverlaps(newReservation, existingRes)) {
+                        System.out.println("overlaps set to true");
+                        overlaps = true;
+                    }
                 }
-            }
-            //Check for date overlaps with newly created list
-            boolean overlaps = false;
-            for (Reservation existingRes : roomReservations) {
-                if (dateOverlaps(res, existingRes)) {
-                    overlaps = true;
+                if (!overlaps) {
+                    System.out.println("\nadded reservation for room" + room.getRoomNumber());
+                    if (reservations.containsKey(customer.getEmail())) {
+                        //If customer email key exists, add new reservation to their list
+                        customersReservations = reservations.get(customer.getEmail());
+                        customersReservations.add(newReservation);
+                        reservations.put(customer.getEmail(), customersReservations);
+                    } else {
+                        customersReservations.add(newReservation);
+                        reservations.put(customer.getEmail(), customersReservations);
+                    }
                 }
-            }
-            if (overlaps) {
-                return null;
-            }
-            else {
-                reservations.put(customer.getEmail(), res);
-                return res;
             }
         }
         else {
             System.out.println("Room not found!");
-            return null;
         }
     }
 
@@ -76,9 +89,11 @@ public class ReservationService {
         Reservation requestedReservation = new Reservation(null, null, checkInDate, checkOutDate);
 
         //Make list of unavailable rooms
-        for (Map.Entry<String, Reservation> entry : reservations.entrySet()) {
-            if(dateOverlaps(requestedReservation, entry.getValue())) {
-                unavailableRooms.add(entry.getValue().getRoom());
+        for (Map.Entry<String, Collection<Reservation>> entry : reservations.entrySet()) {
+            for (Reservation reservation : entry.getValue()) {
+                if (dateOverlaps(requestedReservation, reservation)) {
+                    unavailableRooms.add(reservation.getRoom());
+                }
             }
         }
         //(all rooms) - (unavailable rooms) = available rooms
@@ -88,20 +103,13 @@ public class ReservationService {
     }
 
     public Collection<Reservation> getCustomersReservations(Customer customer) {
-        Collection<Reservation> customersReservations = new ArrayList<>();
-
-        //Populate list with reservations where key == customer's email
-        for (Map.Entry<String, Reservation> entry : reservations.entrySet()) {
-            if(entry.getKey().equals(customer.getEmail())) {
-                customersReservations.add(entry.getValue());
-            }
-        }
-
-        return customersReservations;
+        return reservations.get(customer.getEmail());
     }
     public void printAllReservations() {
-        for (Reservation reservation : reservations.values()) {
-            System.out.println(reservation.toString() + "\n");
+        for (Map.Entry<String, Collection<Reservation>> entry : reservations.entrySet()) {
+            for (Reservation reservation : entry.getValue()) {
+                System.out.println(reservation);
+            }
         }
     }
 

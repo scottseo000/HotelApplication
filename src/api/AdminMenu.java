@@ -13,13 +13,13 @@ public class AdminMenu {
     private static final HotelResource hotelResource = HotelResource.getSingleton();
 
     public static void adminMenu() {
-        printAdminMenu();
         Scanner scanner = new Scanner(System.in);
         String userInput = "";
 
         try {
             boolean exit = false;
             while (!exit) {
+                printAdminMenu();
                 userInput = scanner.nextLine();
                 switch (userInput) {
                     case "1":
@@ -49,7 +49,6 @@ public class AdminMenu {
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid input");
         }
-        MainMenu.mainMenu();
     }
     public static void seeAllCustomers() {
         Collection<Customer> customers = new ArrayList<>(adminResource.getAllCustomers());
@@ -91,8 +90,8 @@ public class AdminMenu {
                 System.out.println("Enter price:\n");
                 //Round inputted double to 2 decimals
                 try {
-                    BigDecimal bd = BigDecimal.valueOf(scanner.nextDouble());
-                    bd = bd.setScale(2, RoundingMode.HALF_UP);
+                    price = Double.parseDouble(scanner.nextLine());
+
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input");
                 }
@@ -121,7 +120,6 @@ public class AdminMenu {
         }
         System.out.println("Rooms added");
         adminResource.addRoom(roomsToAdd);
-        adminMenu();
     }
     public static void addTestData() {
         Scanner scanner = new Scanner(System.in);
@@ -159,13 +157,12 @@ public class AdminMenu {
             calendar.set(2024, 11, 30);
             checkOutDate = calendar.getTime();
             hotelResource.bookARoom("jacksmith@gmail.com", room2, checkInDate, checkOutDate);
+            hotelResource.bookARoom("johndoe@gmail.com", room1, checkInDate, checkOutDate);
 
             System.out.println("Test data added successfully\n");
-            adminMenu();
-        } else {
-            adminMenu();
         }
     }
+
     public static void printAdminMenu() {
         System.out.println("Admin Menu\n");
         System.out.println("Please type an option:\n" +

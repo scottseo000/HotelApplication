@@ -132,9 +132,7 @@ public class MainMenu {
                         cal.setTime(checkOutDate);
                         cal.add(Calendar.DATE, -7);
                         altCheckOutDate = cal.getTime();
-                        for (IRoom room : hotelResource.findARoom(altCheckInDate, altCheckOutDate)) {
-                            alternativeRooms.add(room);
-                        }
+                        alternativeRooms.addAll(hotelResource.findARoom(altCheckInDate, altCheckOutDate));
 
                         if (!alternativeRooms.isEmpty()) {
                             System.out.println("\n\nWe have found some open rooms close to your original requested date, would you like to view them? (y/n):\n");
@@ -157,9 +155,7 @@ public class MainMenu {
                                         System.out.println("Check in date: " + df.format(checkInDate) + "\n");
                                         System.out.println("Check out date: " + df.format(checkOutDate) + "\n");
                                         userInput = scanner.nextLine();
-                                        if (userInput.equalsIgnoreCase("n")) {
-                                            mainMenu();
-                                        } else if (userInput.equalsIgnoreCase("y")) {
+                                        if (userInput.equalsIgnoreCase("y")) {
                                             System.out.println("Reservation confirmed!\n");
                                             hotelResource.bookARoom(email, hotelResource.getRoom(userInput), checkInDate, checkOutDate);
                                         }
@@ -203,9 +199,7 @@ public class MainMenu {
                                 System.out.println("Check in date: " + df.format(checkInDate) + "\n");
                                 System.out.println("Check out date: " + df.format(checkOutDate) + "\n");
                                 userInput = scanner.nextLine();
-                                if (userInput.equalsIgnoreCase("n")) {
-                                    mainMenu();
-                                } else if (userInput.equalsIgnoreCase("y")) {
+                                if (userInput.equalsIgnoreCase("y")) {
                                     System.out.println("Reservation confirmed!\n");
                                     hotelResource.bookARoom(email, hotelResource.getRoom(requestedRoom), checkInDate, checkOutDate);
                                 }
@@ -227,21 +221,20 @@ public class MainMenu {
         String emailRegex = "^(.+)@(.+).(.+)$";
         Pattern pattern = Pattern.compile(emailRegex);
         if(pattern.matcher(userInput).matches()) {
+            System.out.println("user email is valid");
             Collection<Reservation> customersReservations = new ArrayList<>(hotelResource.getCustomersReservations(userInput));
             if (customersReservations.isEmpty()) {
                 System.out.println("No reservations found for that email");
             }
             else {
                 for (Reservation reservation : customersReservations) {
-                    System.out.println(reservation);
+                    System.out.println("\n" + reservation + "\n");
                 }
             }
         }
         else {
             System.out.println("Invalid input, please try again");
-            mainMenu();
         }
-        mainMenu();
     }
     public static void createCustomerAccount() {
         String userInput = "";

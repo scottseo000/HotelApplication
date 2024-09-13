@@ -28,13 +28,12 @@ public class HotelResource {
     public IRoom getRoom (String roomNumber) {
         return reservationService.getARoom(roomNumber);
     }
-    public Reservation bookARoom(String customerEmail, IRoom room, Date checkInDate, Date checkOutDate) {
+    public void bookARoom(String customerEmail, IRoom room, Date checkInDate, Date checkOutDate) {
         Customer customer = customerService.getCustomer(customerEmail);
         if (customer == null) {
             System.out.println("Customer account not found!");
-            return null;
         } else {
-            return reservationService.reserveARoom(customer, room, checkInDate, checkOutDate);
+            reservationService.reserveARoom(customer, room, checkInDate, checkOutDate);
         }
     }
     public Collection<Reservation> getCustomersReservations(String customerEmail) {
