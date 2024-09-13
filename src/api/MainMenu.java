@@ -6,10 +6,7 @@ import model.Reservation;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class MainMenu {
@@ -92,8 +89,9 @@ public class MainMenu {
                     userInput = scanner.nextLine();
                     if (userInput.equalsIgnoreCase("exit")) {
                         customerAccountExists = false;
+                    } else {
+                        checkInDate = new SimpleDateFormat("MM/dd/yyyy").parse(userInput);
                     }
-                    checkInDate = new SimpleDateFormat("MM/dd/yyyy").parse(userInput);
                 }
 
                 if (customerAccountExists) {
@@ -102,9 +100,10 @@ public class MainMenu {
                     userInput = scanner.nextLine();
                     if (userInput.equalsIgnoreCase("exit")) {
                         customerAccountExists = false;
+                    } else {
+                        checkOutDate = new SimpleDateFormat("MM/dd/yyyy").parse(userInput);
+                        isFilledOut = true;
                     }
-                    checkOutDate = new SimpleDateFormat("MM/dd/yyyy").parse(userInput);
-                    isFilledOut = true;
                 }
 
                 //Retrieve all available rooms based on date range
@@ -113,6 +112,62 @@ public class MainMenu {
                 if (customerAccountExists){
                     if (availableRooms.isEmpty()) {
                         System.out.println("No rooms were found within that date range");
+
+                        //Check for openings +- 7 days
+                        Calendar cal = Calendar.getInstance();
+
+                        //+7 days from requested dates
+                        cal.setTime(checkInDate);
+                        cal.add(Calendar.DATE, 7);
+                        Date altCheckInDate = cal.getTime();
+                        cal.setTime(checkOutDate);
+                        cal.add(Calendar.DATE, 7);
+                        Date altCheckOutDate = cal.getTime();
+                        Collection<IRoom> alternativeRooms = new ArrayList<>(hotelResource.findARoom(altCheckInDate, altCheckOutDate));
+
+                        //-7 days from requested dates
+                        cal.setTime(checkInDate);
+                        cal.add(Calendar.DATE, -7);
+                        altCheckInDate = cal.getTime();
+                        cal.setTime(checkOutDate);
+                        cal.add(Calendar.DATE, -7);
+                        altCheckOutDate = cal.getTime();
+                        for (IRoom room : hotelResource.findARoom(altCheckInDate, altCheckOutDate)) {
+                            alternativeRooms.add(room);
+                        }
+
+                        if (!alternativeRooms.isEmpty()) {
+                            System.out.println("\n\nWe have found some open rooms close to your original requested date, would you like to view them? (y/n):\n");
+                            userInput = scanner.nextLine();
+                            if (userInput.equalsIgnoreCase("y")) {
+                                for (IRoom room : alternativeRooms) {
+                                    System.out.println(room.toString());
+                                    System.out.println("\n");
+                                }
+                                System.out.println("Would you like to book one of these rooms? (y/n):\n");
+                                userInput = scanner.nextLine();
+                                if (userInput.equalsIgnoreCase("y")) {
+                                    System.out.println("\nWhich room number would you like to reserve?");
+                                    userInput = scanner.nextLine();
+                                    if (!alternativeRooms.contains(userInput)) {
+                                        System.out.println("Room number not found");
+                                    } else {
+                                        System.out.println("Please confirm if this information is correct with (y/n):\n");
+                                        System.out.println(hotelResource.getRoom(userInput).toString() + "\n");
+                                        System.out.println("Check in date: " + df.format(checkInDate) + "\n");
+                                        System.out.println("Check out date: " + df.format(checkOutDate) + "\n");
+                                        userInput = scanner.nextLine();
+                                        if (userInput.equalsIgnoreCase("n")) {
+                                            mainMenu();
+                                        } else if (userInput.equalsIgnoreCase("y")) {
+                                            System.out.println("Reservation confirmed!\n");
+                                            hotelResource.bookARoom(email, hotelResource.getRoom(userInput), checkInDate, checkOutDate);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     } else {
                         System.out.println("Here is a list of available rooms: \n");
                         for (IRoom room : availableRooms) {
@@ -151,7 +206,7 @@ public class MainMenu {
                                 if (userInput.equalsIgnoreCase("n")) {
                                     mainMenu();
                                 } else if (userInput.equalsIgnoreCase("y")) {
-                                    System.out.println("Reservation confirmed!");
+                                    System.out.println("Reservation confirmed!\n");
                                     hotelResource.bookARoom(email, hotelResource.getRoom(requestedRoom), checkInDate, checkOutDate);
                                 }
                             }
