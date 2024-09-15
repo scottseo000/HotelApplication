@@ -249,15 +249,19 @@ public class MainMenu {
         String emailRegex = "^[^@]+@[^@]+\\.[^@]+$";
         Pattern pattern = Pattern.compile(emailRegex);
         if(pattern.matcher(userInput).matches()) {
-            System.out.println("user email is valid");
-            Collection<Reservation> customersReservations = new ArrayList<>(hotelResource.getCustomersReservations(userInput));
-            if (customersReservations.isEmpty()) {
-                System.out.println("No reservations found for that email");
-            }
-            else {
-                for (Reservation reservation : customersReservations) {
-                    System.out.println("\n" + reservation + "\n");
+            //System.out.println("user email is valid");
+            if (hotelResource.getCustomer(userInput) != null) {
+                Collection<Reservation> customersReservations = new ArrayList<>(hotelResource.getCustomersReservations(userInput));
+                if (customersReservations.isEmpty()) {
+                    System.out.println("No reservations found for that email");
                 }
+                else {
+                    for (Reservation reservation : customersReservations) {
+                        System.out.println("\n" + reservation + "\n");
+                    }
+                }
+            } else {
+                System.out.println("No reservations found for that email");
             }
         }
         else {

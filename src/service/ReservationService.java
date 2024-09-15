@@ -103,7 +103,7 @@ public class ReservationService {
     }
 
     public Collection<Reservation> getCustomersReservations(Customer customer) {
-        return reservations.get(customer.getEmail());
+        return reservations.getOrDefault(customer.getEmail(), Collections.emptyList());
     }
     public void printAllReservations() {
         for (Map.Entry<String, Collection<Reservation>> entry : reservations.entrySet()) {
