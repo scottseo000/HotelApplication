@@ -11,7 +11,7 @@ public class Customer {
         this.firstName = firstName;
         this.lastName = lastName;
 
-        String emailRegex = "^(.+)@(.+).(.+)$";
+        String emailRegex = "^[^@]+@[^@]+\\.[^@]+$";
         Pattern pattern = Pattern.compile(emailRegex);
         if(pattern.matcher(email).matches()) {
             this.email = email;

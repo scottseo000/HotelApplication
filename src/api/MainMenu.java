@@ -246,7 +246,7 @@ public class MainMenu {
         String userInput = "";
         System.out.println("\nPlease enter your email: ");
         userInput = scanner.nextLine();
-        String emailRegex = "^(.+)@(.+).(.+)$";
+        String emailRegex = "^[^@]+@[^@]+\\.[^@]+$";
         Pattern pattern = Pattern.compile(emailRegex);
         if(pattern.matcher(userInput).matches()) {
             System.out.println("user email is valid");
