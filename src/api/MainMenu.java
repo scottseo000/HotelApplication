@@ -152,8 +152,8 @@ public class MainMenu {
                                 if (userInput.equalsIgnoreCase("y")) {
                                     Collection<IRoom> alternativeRoomList = alternativeRooms.values();
                                     System.out.println("\nWhich room number would you like to reserve?");
-                                    userInput = scanner.nextLine();
-                                    if (!alternativeRoomList.contains(hotelResource.getRoom(userInput))) {
+                                    String altRoom = scanner.nextLine();
+                                    if (!alternativeRoomList.contains(hotelResource.getRoom(altRoom))) {
                                         System.out.println("Room number not found");
                                     } else {
                                         System.out.println("Which alternate timeslot would you like?");
@@ -161,13 +161,13 @@ public class MainMenu {
                                         System.out.println("Type 2 for 7 days after previously requested date");
                                         if (userInput.equalsIgnoreCase("1")) {
                                             System.out.println("Please confirm if information is correct below:");
-                                            System.out.println(hotelResource.getRoom(userInput).toString() + "\n");
+                                            System.out.println(hotelResource.getRoom(altRoom).toString() + "\n");
                                             System.out.println("Check in date: " + df.format(altCheckInDate) + "\n");
                                             System.out.println("Check out date: " + df.format(altCheckOutDate) + "\n");
                                             userInput = scanner.nextLine();
                                             if (userInput.equalsIgnoreCase("y")) {
                                                 System.out.println("Reservation confirmed!\n");
-                                                hotelResource.bookARoom(email, hotelResource.getRoom(userInput), checkInDate, checkOutDate);
+                                                hotelResource.bookARoom(email, hotelResource.getRoom(altRoom), checkInDate, checkOutDate);
                                             }
                                         } else if (userInput.equalsIgnoreCase("2")) {
                                             cal.setTime(checkInDate);
